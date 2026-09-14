@@ -61,12 +61,19 @@ git-ignored — regenerate it locally rather than pulling a binary from git).
 
 ## Schema
 
-- **Reference tables** (`ref_issue_area`, `ref_decision_direction`,
+- **Reference tables** (`ref_issue_area`, `ref_issue`, `ref_decision_direction`,
   `ref_winning_party`, `ref_decision_type`, `ref_jurisdiction`,
-  `ref_case_disposition`, `ref_law_type`, `ref_party_type`, `ref_vote_type`,
-  `ref_opinion_type`) — small lookup tables decoded by hand from the [SCDB
-  online codebook](https://scdb.la.psu.edu/online-codebook/), seeded from
-  `sql/seeds/*.csv`.
+  `ref_case_disposition`, `ref_law_type`, `ref_law_supp`, `ref_party_type`,
+  `ref_lower_court`, `ref_vote_type`, `ref_opinion_type`) — lookup tables
+  decoded by hand from the [SCDB online
+  codebook](https://scdb.la.psu.edu/online-codebook/), seeded from
+  `sql/seeds/*.csv`. `ref_issue` (260 codes) is the granular subject matter
+  of each case; `ref_law_supp` (149 codes) is the specific constitutional
+  provision, federal statute, or court rule at issue -- i.e. **what statute
+  each case turned on** (`cases.law_supp_code`), e.g. "Sherman Act" or
+  "Fourteenth Amendment (equal protection)"; `ref_lower_court` (163 codes,
+  shared by `case_origin_code` and `case_source_code`) is the specific court
+  whose decision was under review.
 - **`justices`** — one row per justice; SCDB tenure dates joined to FJC
   appointment data via `etl/load.py::_match_justices_to_fjc` (last-name
   match, disambiguated by first name / nearest appointment year for the five
@@ -93,12 +100,14 @@ home directory set under File > Options > Python scripting. Re-run
 
 ## Known gaps
 
-A handful of SCDB categorical columns reference large lookup lists (the
-granular `issue` codes, `lawSupp`, `caseOrigin`/`caseSource` lower-court
-codes, `certReason`, `authorityDecision1/2`, `splitVote`) that were **not**
-transcribed into reference tables for this initial build — those columns are
-loaded as raw SCDB integer codes. Foreign keys to the reference tables that
-*do* exist are declared in `sql/schema.sql` for documentation but not
-enforced during load (a few legacy-era rows use edge-case codes outside the
-transcribed lists); run `PRAGMA foreign_keys = ON;` yourself if you want
-enforcement once you've closed the gaps you care about.
+A few SCDB categorical columns reference lookup lists that were **not**
+transcribed into reference tables for this build (`certReason`,
+`authorityDecision1/2`, `splitVote`) — those columns are loaded as raw SCDB
+integer codes. Separately, 7 of 28,249 non-null `case_origin_code` values
+(0.02%) use codes not published anywhere in the SCDB online codebook (154,
+156, 157, 158, 161) — rather than guess at labels the source doesn't
+document, they're left unresolved (`ref_lower_court` has no matching row).
+Foreign keys to the reference tables that *do* exist are declared in
+`sql/schema.sql` for documentation but not enforced during load; run
+`PRAGMA foreign_keys = ON;` yourself if you want enforcement once you've
+closed the gaps you care about.

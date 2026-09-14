@@ -44,8 +44,12 @@ cases = pd.read_sql_query(
         cd.label      AS case_disposition,
         wp.label      AS winning_party,
         ia.label      AS issue_area,
+        iss.label     AS issue,
         dd.label      AS decision_direction,
         lt.label      AS law_type,
+        ls.label      AS statute,
+        oc.label      AS origin_court,
+        sc.label      AS source_court,
         mw.full_name  AS majority_opinion_writer,
         c.maj_votes, c.min_votes
     FROM cases c
@@ -56,8 +60,12 @@ cases = pd.read_sql_query(
     LEFT JOIN ref_case_disposition cd ON cd.code = c.case_disposition_code
     LEFT JOIN ref_winning_party wp    ON wp.code = c.winning_party_code
     LEFT JOIN ref_issue_area ia       ON ia.code = c.issue_area_code
+    LEFT JOIN ref_issue iss           ON iss.code = c.issue_code
     LEFT JOIN ref_decision_direction dd ON dd.code = c.decision_direction_code
     LEFT JOIN ref_law_type lt         ON lt.code = c.law_type_code
+    LEFT JOIN ref_law_supp ls         ON ls.code = c.law_supp_code
+    LEFT JOIN ref_lower_court oc      ON oc.code = c.case_origin_code
+    LEFT JOIN ref_lower_court sc      ON sc.code = c.case_source_code
     """,
     conn,
 )

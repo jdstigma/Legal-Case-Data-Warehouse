@@ -33,6 +33,9 @@ REF_SEED_FILES = {
     "ref_party_type": "ref_party_type.csv",
     "ref_vote_type": "ref_vote_type.csv",
     "ref_opinion_type": "ref_opinion_type.csv",
+    "ref_lower_court": "ref_lower_court.csv",
+    "ref_issue": "ref_issue.csv",
+    "ref_law_supp": "ref_law_supp.csv",
 }
 
 # (filename, source_release tag)
