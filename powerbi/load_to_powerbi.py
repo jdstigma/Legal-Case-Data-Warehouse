@@ -106,7 +106,7 @@ votes = pd.read_sql_query(
     """
     SELECT
         v.vote_pk, v.case_id, v.source_release,
-        j.full_name AS justice, j.appointing_president, j.appointing_party,
+        v.justice_id, j.full_name AS justice, j.appointing_president, j.appointing_party,
         vt.label AS vote, ot.label AS opinion, dd.label AS vote_direction
     FROM votes v
     LEFT JOIN justices j              ON j.justice_id = v.justice_id
