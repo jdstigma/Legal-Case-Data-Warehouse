@@ -80,6 +80,17 @@ git-ignored — regenerate it locally rather than pulling a binary from git).
 
 See `sql/schema.sql` for full column definitions and comments.
 
+## Power BI
+
+`powerbi/load_to_powerbi.py` is a Power BI **Python script** data source
+(Get Data > More... > Other > Python script) — the standard way to connect
+Power BI to SQLite, since it has no native connector. It reads
+`db/legal_data.db`, joins the reference tables back into readable labels,
+and exposes four ready-to-use tables: `cases`, `case_parties`, `votes`,
+`justices`. Requires `pandas` (`pip install pandas`) and Power BI's Python
+home directory set under File > Options > Python scripting. Re-run
+(Refresh) after rebuilding the database to pick up new data.
+
 ## Known gaps
 
 A handful of SCDB categorical columns reference large lookup lists (the
