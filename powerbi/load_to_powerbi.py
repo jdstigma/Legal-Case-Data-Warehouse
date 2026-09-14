@@ -22,6 +22,14 @@ rebuilt by etl/run_pipeline.py to pick up new data.
 The tables below denormalize the small reference/lookup tables back into
 their text labels -- convenient for direct use in visuals -- while the
 underlying SQLite warehouse stays properly normalized for the ETL demo.
+
+Note on DB_PATH: when this script runs as a plain .py file (e.g.
+`python powerbi/load_to_powerbi.py`), __file__ correctly locates the repo
+and db/legal_data.db is found relative to it. When pasted into Power BI's
+Python script editor instead, Power BI executes it from a temp location, so
+that relative lookup fails ("unable to open database file") -- the except
+branch below falls back to _FALLBACK_DB_PATH in that case. Edit
+_FALLBACK_DB_PATH if your clone of this repo lives somewhere else.
 """
 
 import sqlite3
@@ -29,7 +37,14 @@ from pathlib import Path
 
 import pandas as pd
 
-DB_PATH = Path(__file__).resolve().parent.parent / "db" / "legal_data.db"
+_FALLBACK_DB_PATH = Path(r"C:\Users\jdsti\OneDrive\Desktop\Projects\Legal-Case-Data-Warehouse\db\legal_data.db")
+
+try:
+    DB_PATH = Path(__file__).resolve().parent.parent / "db" / "legal_data.db"
+    if not DB_PATH.exists():
+        raise FileNotFoundError(DB_PATH)
+except (NameError, FileNotFoundError):
+    DB_PATH = _FALLBACK_DB_PATH
 
 conn = sqlite3.connect(DB_PATH)
 
