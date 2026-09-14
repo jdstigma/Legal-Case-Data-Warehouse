@@ -50,6 +50,10 @@ cases = pd.read_sql_query(
         ls.label      AS statute,
         oc.label      AS origin_court,
         sc.label      AS source_court,
+        cr.label      AS cert_reason,
+        ad1.label     AS authority_decision_1,
+        ad2.label     AS authority_decision_2,
+        sv.label      AS split_vote,
         mw.full_name  AS majority_opinion_writer,
         c.maj_votes, c.min_votes
     FROM cases c
@@ -66,6 +70,10 @@ cases = pd.read_sql_query(
     LEFT JOIN ref_law_supp ls         ON ls.code = c.law_supp_code
     LEFT JOIN ref_lower_court oc      ON oc.code = c.case_origin_code
     LEFT JOIN ref_lower_court sc      ON sc.code = c.case_source_code
+    LEFT JOIN ref_cert_reason cr      ON cr.code = c.cert_reason_code
+    LEFT JOIN ref_authority_decision ad1 ON ad1.code = c.authority_decision1_code
+    LEFT JOIN ref_authority_decision ad2 ON ad2.code = c.authority_decision2_code
+    LEFT JOIN ref_split_vote sv       ON sv.code = c.split_vote_code
     """,
     conn,
 )

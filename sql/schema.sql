@@ -9,9 +9,8 @@
 -- (grain: one row per justice, per case issue, per vote -- the large table).
 --
 -- Columns suffixed `_code` that have no matching `ref_*` table are left as
--- the raw SCDB integer code; a few of the codebook's large lookup lists
--- (certReason, authorityDecision1/2, splitVote) were not transcribed for
--- this initial build. See README.md "Known gaps".
+-- the raw SCDB integer code. See README.md "Known gaps" for the small
+-- remaining residue (undocumented codes the SCDB codebook itself omits).
 --
 -- FK relationships are declared below for documentation, but are NOT
 -- enforced during load (see etl/load.py) -- a handful of SCDB rows use
@@ -97,6 +96,23 @@ CREATE TABLE IF NOT EXISTS ref_law_supp (
     label TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS ref_cert_reason (
+    code INTEGER PRIMARY KEY,
+    label TEXT NOT NULL
+);
+
+-- Shared by authority_decision1_code and authority_decision2_code (the
+-- codebook confirms both use identical coding).
+CREATE TABLE IF NOT EXISTS ref_authority_decision (
+    code INTEGER PRIMARY KEY,
+    label TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ref_split_vote (
+    code INTEGER PRIMARY KEY,
+    label TEXT NOT NULL
+);
+
 -- ---------------------------------------------------------------------
 -- Justices dimension (SCDB tenure data joined to FJC appointment/party data)
 -- ---------------------------------------------------------------------
@@ -147,7 +163,7 @@ CREATE TABLE IF NOT EXISTS cases (
     case_source_code INTEGER REFERENCES ref_lower_court(code),
     case_source_state INTEGER,
     lc_disagreement INTEGER,
-    cert_reason_code INTEGER,             -- raw SCDB cert-reason code (not enriched)
+    cert_reason_code INTEGER REFERENCES ref_cert_reason(code),
     lc_disposition_code INTEGER REFERENCES ref_case_disposition(code),
     lc_disposition_direction_code INTEGER REFERENCES ref_decision_direction(code),
     declaration_uncon INTEGER,
@@ -160,14 +176,14 @@ CREATE TABLE IF NOT EXISTS cases (
     issue_area_code INTEGER REFERENCES ref_issue_area(code),
     decision_direction_code INTEGER REFERENCES ref_decision_direction(code),
     decision_direction_dissent_code INTEGER REFERENCES ref_decision_direction(code),
-    authority_decision1_code INTEGER,     -- raw (not enriched)
-    authority_decision2_code INTEGER,     -- raw (not enriched)
+    authority_decision1_code INTEGER REFERENCES ref_authority_decision(code),
+    authority_decision2_code INTEGER REFERENCES ref_authority_decision(code),
     law_type_code INTEGER REFERENCES ref_law_type(code),
     law_supp_code INTEGER REFERENCES ref_law_supp(code),
     law_minor TEXT,
     maj_opinion_writer_id INTEGER REFERENCES justices(justice_id),
     maj_opinion_assigner_id INTEGER REFERENCES justices(justice_id),
-    split_vote_code INTEGER,              -- raw (not enriched)
+    split_vote_code INTEGER REFERENCES ref_split_vote(code),
     maj_votes INTEGER,
     min_votes INTEGER
 );

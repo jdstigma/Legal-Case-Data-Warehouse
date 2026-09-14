@@ -36,6 +36,9 @@ REF_SEED_FILES = {
     "ref_lower_court": "ref_lower_court.csv",
     "ref_issue": "ref_issue.csv",
     "ref_law_supp": "ref_law_supp.csv",
+    "ref_cert_reason": "ref_cert_reason.csv",
+    "ref_authority_decision": "ref_authority_decision.csv",
+    "ref_split_vote": "ref_split_vote.csv",
 }
 
 # (filename, source_release tag)
