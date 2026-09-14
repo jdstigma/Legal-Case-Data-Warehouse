@@ -119,7 +119,8 @@ votes = pd.read_sql_query(
 
 justices = pd.read_sql_query(
     """
-    SELECT justice_id, full_name, tenure_start, tenure_end,
+    SELECT justice_id, full_name, tenure_start,
+           COALESCE(tenure_end, date('now')) AS tenure_end,
            appointing_president, appointing_party, aba_rating
     FROM justices
     """,
